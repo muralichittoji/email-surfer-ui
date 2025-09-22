@@ -2,28 +2,41 @@ import React, { useEffect, useState } from "react";
 import useAuth from "../../../hooks/useAuth";
 import { loginApi } from "../api/apiService";
 import { useNavigate } from "react-router-dom";
+import { MailWarning } from "lucide-react";
 
 const Password = () => {
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
-	const { user } = useAuth();
+	const { pendingUser, login } = useAuth();
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		console.log({ user });
-	}, []);
+		console.log("Pending user from email step:", pendingUser);
+	}, [pendingUser]);
 
 	const handleLogin = () => {
 		const userDetails = {
-			username_email: user?.user?.email,
-			password: password,
+			username_email: pendingUser?.email,
+			password,
 		};
+
 		if (password) {
 			loginApi(userDetails)
 				.then((res) => {
-					console.log({ res });
-					navigate("/surfer/inbox");
-					setError("");
+					if (res?.token) {
+						// ✅ update context
+						login({
+							token: res.token,
+							user: {
+								email: res.email,
+								username: res.username,
+							},
+						});
+						navigate("/surfer/inbox");
+						setError("");
+					} else {
+						setError("Password is invalid");
+					}
 				})
 				.catch((err) => {
 					console.error({ err });
@@ -38,12 +51,12 @@ const Password = () => {
 				<span className="text-4xl font-bold mb-4">
 					<p className="text-xl font-normal mt-3">Welcome back</p>
 					<select className="text-lg border border-gray-300 rounded-lg">
-						<option>{user?.user?.email}</option>
+						<option>{pendingUser?.email}</option>
 					</select>
 				</span>
 				<span>
 					<input
-						type="text"
+						type="password"
 						placeholder="Enter Password"
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}

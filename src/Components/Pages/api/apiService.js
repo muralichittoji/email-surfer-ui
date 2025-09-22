@@ -5,20 +5,15 @@ export const fetchUsername = async (username) => {
 	const response = await axiosInstance.post("/auth/check_user", {
 		username_email: username,
 	});
+
 	return response.data;
 };
 
 // Login and store token
 export const loginApi = async (userDetails) => {
 	const response = await axiosInstance.post("/auth/login", userDetails);
-
+	console.log({ userDetails });
 	// Save token in localStorage
-	if (response.data?.token) {
-		localStorage.setItem(
-			"session",
-			JSON.stringify({ token: response.data.token })
-		);
-	}
 
 	return response.data;
 };

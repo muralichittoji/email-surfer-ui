@@ -1,10 +1,10 @@
 import { useState } from "react";
-import GlobalHeader from "./components/Common/GlobalHeader";
 import Sidebar from "./Components/Navigation/Sidebar";
 import Mailbox from "./Components/Pages/Mailbox";
 import FilterModal from "./Components/Common/FilterModel";
 import ComposeMail from "./Components/Pages/ComposeMail";
 import { mailSender } from "./Components/Pages/api/apiService";
+import GlobalHeader from "./Components/Common/GlobalHeader";
 
 export default function DefaultPage() {
 	const [searchQuery, setSearchQuery] = useState("");
@@ -36,12 +36,13 @@ export default function DefaultPage() {
 					setSearchQuery={setSearchQuery}
 					onFilterOpen={() => setFilterOpen(true)}
 					onSidebarToggle={() => setSidebarOpen((prev) => !prev)}
+					isSidebar={() => setSidebarOpen(!sidebarOpen)}
 				/>
 			</div>
 
 			{/* Main Layout */}
 			<div className="flex-1 overflow-hidden flex">
-				<div className="flex-none w-64">
+				{sidebarOpen && (
 					<Sidebar
 						isOpen={sidebarOpen}
 						onClose={() => setSidebarOpen(false)}
@@ -49,7 +50,7 @@ export default function DefaultPage() {
 						onComposeOpen={() => setComposeOpen(true)}
 						setSelectedCategory={setSelectedCategory}
 					/>
-				</div>
+				)}
 
 				{/* Mailbox */}
 				<div className="flex-1 overflow-hidden ">

@@ -1,23 +1,26 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { fetchUsername } from "../api/apiService";
 import { useNavigate } from "react-router-dom";
-import useAuth from "../../../hooks/useAuth";
 import { MailWarning } from "lucide-react";
+import AuthContext from "../../../context/AuthContext";
 
 const Login = () => {
 	const [email, setEmail] = useState("");
 	const [error, setError] = useState("");
 	const navigate = useNavigate();
-	const { login } = useAuth();
+	const { saveEmailStep } = useContext(AuthContext);
 
 	const handleContinue = () => {
 		if (!email.trim()) return;
 		fetchUsername(email).then((res) => {
 			console.log({ res });
 			if (res?.exists === true) {
-				navigate("/password");
 				setError("");
-				login(res);
+				saveEmailStep({
+					email: res?.email,
+					username: res?.username,
+				});
+				navigate("/password");
 			} else {
 				setError("Couldn’t find your Bank Account");
 			}

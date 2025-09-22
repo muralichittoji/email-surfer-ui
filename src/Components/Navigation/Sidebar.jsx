@@ -58,32 +58,22 @@ export default function Sidebar({
 }) {
 	return (
 		<div className="h-full">
-			{/* Mobile Backdrop */}
-			{isOpen && (
-				<button
-					className="fixed inset-0 bg-black/50 z-40 md:hidden"
-					onClick={onClose}
-					aria-label="Close Sidebar"
-				/>
-			)}
-
-			{/* Sidebar Container */}
 			<aside
 				className={`
-          h-full w-64 bg-gray-100
+          h-full w-94 lg:w-64 bg-gray-100
           transform transition-transform duration-300
           fixed z-50 top-0 left-0
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
-          md:static md:translate-x-0
+          lg:static lg:translate-x-0
         `}
 			>
 				{/* Header (Mobile Only) */}
-				<div className="flex items-center justify-between p-4 border-b md:hidden">
+				<div className="flex items-center justify-between p-4 border-b lg:hidden">
 					<h2 className="text-lg font-bold">Menu</h2>
 					<button
 						onClick={onClose}
 						aria-label="Close Menu"
-						className="p-1 hover:bg-gray-100 rounded"
+						className="p-1 hover:bg-gray-100 rounded  cursor-pointer"
 					>
 						<X size={24} />
 					</button>
