@@ -1,1 +1,35 @@
 @import "tailwindcss";
+
+@theme {
+	--color-bg: #f8f4e0;
+	--color-text: #222222;
+	--color-primary: #ffd700; /* GOLD */
+	--color-secondary: #c0c0c0;
+	--color-accent: #efbf04;
+	--color-muted: #bdbec5;
+	--color-graphite: #5c5c5c;
+	--color-bronze: #665d1e;
+	--color-steel: #8b8c89;
+	--color-border: var(--color-muted);
+	--color-card-bg: #ffffff;
+}
+
+/* Utilities like glow/animate-gradient */
+.glow {
+	box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+@keyframes gradient-move {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+.animate-gradient {
+	background-size: 200% 200%;
+	animation: gradient-move 10s ease infinite;
+}

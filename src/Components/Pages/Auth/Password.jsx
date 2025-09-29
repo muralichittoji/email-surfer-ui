@@ -3,6 +3,7 @@ import useAuth from "../../../hooks/useAuth";
 import { loginApi } from "../api/apiService";
 import { useNavigate } from "react-router-dom";
 import { MailWarning } from "lucide-react";
+import AuthCard from "../Common/AuthCard";
 
 const Password = () => {
 	const [password, setPassword] = useState("");
@@ -24,7 +25,6 @@ const Password = () => {
 			loginApi(userDetails)
 				.then((res) => {
 					if (res?.token) {
-						// ✅ update context
 						login({
 							token: res.token,
 							user: {
@@ -35,51 +35,64 @@ const Password = () => {
 						navigate("/surfer/inbox");
 						setError("");
 					} else {
-						setError("Password is invalid");
+						setError("Wrong password. Try again or click Forgot password.");
 					}
 				})
 				.catch((err) => {
 					console.error({ err });
-					setError("Password is invalid");
+					setError("Wrong password. Try again or click Forgot password.");
 				});
 		}
 	};
 
 	return (
-		<div className="flex h-screen items-center bg-gray-100 justify-center">
-			<div className="p-6 bg-white shadow-md rounded-2xl h-99 w-190 grid grid-cols-2 items-center gap-3">
-				<span className="text-4xl font-bold mb-4">
-					<p className="text-xl font-normal mt-3">Welcome back</p>
-					<select className="text-lg border border-gray-300 rounded-lg">
-						<option>{pendingUser?.email}</option>
-					</select>
-				</span>
-				<span>
-					<input
-						type="password"
-						placeholder="Enter Password"
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-						className={`w-full p-2 border border-gray-300 rounded-xl mb-4 ${
-							error.length > 0 ? "border-red-600 placeholder-red-600" : ""
-						}`}
-					/>
-					<span className="flex items-center justify-end mt-5">
-						<button
-							onClick={handleLogin}
-							className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600 w-25 rounded-3xl cursor-pointer"
-						>
-							Login
-						</button>
-					</span>
-					{error.length > 0 && (
-						<p className="text-red-600 text-md font-md flex gap-2">
-							<MailWarning /> {error}
-						</p>
-					)}
-				</span>
+		<AuthCard
+			title="Welcome back"
+			subtitle={
+				<select
+					className="w-full text-md border border-gray-300 rounded-3xl bg-white/60 backdrop-blur-sm mb-4 cursor-pointer"
+					disabled
+				>
+					<option>{pendingUser?.email}</option>
+				</select>
+			}
+			logo="/logo.png"
+		>
+			{/* Password field */}
+			<input
+				type="password"
+				placeholder="Enter your password"
+				value={password}
+				onChange={(e) => setPassword(e.target.value)}
+				className={`w-full px-3 py-3 rounded-md border text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 ${
+					error ? "border-red-500 placeholder-red-500" : "border-gray-300"
+				}`}
+			/>
+
+			{/* Error message */}
+			{error && (
+				<p className="text-red-600 text-sm flex items-center gap-2">
+					<MailWarning className="w-4 h-4" />
+					{error}
+				</p>
+			)}
+
+			{/* Actions */}
+			<div className="flex justify-between items-center mt-4">
+				<button
+					type="button"
+					className="text-blue-600 hover:underline text-sm cursor-pointer"
+				>
+					Forgot password?
+				</button>
+				<button
+					onClick={handleLogin}
+					className="bg-blue-600 text-white px-5 py-2 font-medium hover:bg-blue-700 transition-colors w-30 cursor-pointer rounded-3xl"
+				>
+					Login
+				</button>
 			</div>
-		</div>
+		</AuthCard>
 	);
 };
 

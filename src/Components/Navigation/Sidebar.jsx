@@ -60,7 +60,7 @@ export default function Sidebar({
 		<div className="h-full">
 			<aside
 				className={`
-          h-full w-94 lg:w-64 bg-gray-100
+          h-full w-94 lg:w-64 bg-blue-50
           transform transition-transform duration-300
           fixed z-50 top-0 left-0
           ${isOpen ? "translate-x-0" : "-translate-x-full"}

@@ -28,7 +28,7 @@ export default function DefaultPage() {
 	};
 
 	return (
-		<div className="h-screen flex flex-col bg-gray-100 overflow-hidden">
+		<div className="h-screen flex flex-col bg-blue-50 overflow-hidden">
 			{/* Global Header */}
 			<div className="flex-none">
 				<GlobalHeader
@@ -53,8 +53,8 @@ export default function DefaultPage() {
 				)}
 
 				{/* Mailbox */}
-				<div className="flex-1 overflow-hidden ">
-					<div className="bg-white rounded-xl shadow-sm h-full">
+				<div className="flex-1 overflow-hidden">
+					<div className="bg-white rounded-3xl h-full m-2">
 						<Mailbox
 							username={username}
 							searchQuery={searchQuery}

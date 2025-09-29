@@ -55,9 +55,9 @@ export default function EmailList({
 	};
 
 	return (
-		<div className="h-full flex flex-col">
+		<div className="h-full bg-white flex flex-col bg-white rounded-3xl p-2">
 			{/* Toolbar */}
-			<div className="flex justify-between items-center px-4 py-2 border-b border-gray-200 bg-gray-50 h-10">
+			<div className="flex justify-between items-center px-4 py-2 border-b border-gray-200 animate-gradient">
 				<div className="flex items-center gap-3">
 					{/* Select All Checkbox */}
 					<input
@@ -84,7 +84,7 @@ export default function EmailList({
 			</div>
 
 			{/* Email List */}
-			<div className="divide-y divide-gray-200 overflow-y-auto flex-1">
+			<div className="divide-y divide-gray-200 bg-white overflow-y-auto flex-1">
 				{emails.map((mail) => {
 					const isSelected = selectedEmail?.id === mail.id;
 					const isUnread = !mail.is_read;
@@ -93,13 +93,13 @@ export default function EmailList({
 					return (
 						<div
 							key={mail.id}
-							className={`flex items-start gap-3 p-4 cursor-pointer transition rounded-md mx-2 my-1.5 border shadow-sm hover:shadow-lg
+							className={`flex items-start gap-3 p-4 cursor-pointer transition rounded-md mx-2 my-1.5 border hover:shadow-md glow
                 ${
 									isSelected
 										? "bg-blue-50 shadow-md border-blue-300"
 										: "border-transparent"
 								}
-                ${isUnread ? "bg-white" : "bg-gray-100 hover:bg-gray-100"}
+                ${isUnread ? "bg-white" : "bg-blue-50 hover:bg-blue-70"}
               `}
 						>
 							{/* Checkbox and Star */}

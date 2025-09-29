@@ -110,7 +110,7 @@ export default function Mailbox({ searchQuery, selectedCategory }) {
 			<div
 				className={`${
 					selectedEmail ? "lg:w-2/3 w-full" : "w-full"
-				} h-full overflow-y-auto border-r border-gray-200`}
+				} h-full overflow-y-auto`}
 			>
 				<EmailList
 					emails={filteredEmails}

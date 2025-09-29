@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { ChevronDown, Filter, Menu } from "lucide-react";
+import {
+	ChevronDown,
+	Filter,
+	LogOut,
+	Menu,
+	Settings,
+	UserRound,
+} from "lucide-react";
 import useAuth from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
@@ -19,22 +26,22 @@ export default function GlobalHeader({
 	};
 
 	return (
-		<header className="flex items-center justify-between p-4 bg-gray-100">
+		<header className="flex items-center justify-between p-4 bg-blue-50">
 			{/* Search Bar */}
-			<div className="flex gap-2">
+			<div className="flex w-full gap-2">
 				<button
 					className="lg:display-none cursor-pointer"
 					onClick={() => isSidebar()}
 				>
 					<Menu />
 				</button>
-				<div className="flex-1 max-w-2xl relative">
+				<div className="flex-1 max-w-3/7 relative">
 					<input
 						type="text"
 						placeholder="Search mails..."
 						value={searchQuery}
 						onChange={(e) => setSearchQuery(e.target.value)}
-						className="w-full border rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring focus:ring-blue-300"
+						className="w-full border rounded-3xl px-4 py-2 pr-10 focus:outline-none focus:ring focus:ring-blue-300"
 					/>
 					<button
 						onClick={onFilterOpen}
@@ -55,18 +62,18 @@ export default function GlobalHeader({
 				</button>
 
 				{dropdownOpen && (
-					<div className="absolute right-0 mt-2 w-40 bg-white rounded-sm shadow-xl">
-						<button className="block w-full px-4 py-2 text-left hover:bg-gray-100">
-							Profile
+					<div className="absolute right-0 mt-2 w-40 bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden animate-gradient">
+						<button className="cursor-pointer w-full px-3 py-2 text-left hover:bg-blue-50 border-b border-gray-200 flex items-center gap-3">
+							<UserRound size={20} /> Profile
 						</button>
-						<button className="block w-full px-4 py-2 text-left hover:bg-gray-100">
-							Settings
+						<button className="cursor-pointer w-full px-3 py-2 text-left hover:bg-blue-50 border-b border-gray-200 flex items-center gap-3">
+							<Settings size={20} /> Settings
 						</button>
 						<button
-							className="block w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100"
+							className="cursor-pointer w-full px-3 py-2 text-left text-red-600 hover:bg-red-50 flex items-center gap-3"
 							onClick={handleLogout}
 						>
-							Logout
+							<LogOut size={20} /> Logout
 						</button>
 					</div>
 				)}
