@@ -1,5 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
+import {
+	Box,
+	Typography,
+	Checkbox,
+	Button,
+	IconButton,
+	Chip,
+	Paper,
+	Divider,
+	List,
+	ListItem,
+	ListItemText,
+	ListItemButton,
+} from "@mui/material";
 import { Star, CheckSquare } from "lucide-react";
 
 export default function EmailList({
@@ -11,11 +25,22 @@ export default function EmailList({
 }) {
 	const [selectedEmailIds, setSelectedEmailIds] = useState([]);
 
+	useEffect(() => {
+		console.log("Emails updated:", emails);
+	});
+
 	if (!emails.length) {
-		return <div className="p-4 text-gray-500">No emails found.</div>;
+		return (
+			<Typography
+				variant="body2"
+				color="text.secondary"
+				sx={{ p: 2, textAlign: "center" }}
+			>
+				No emails found.
+			</Typography>
+		);
 	}
 
-	// Handle selecting/deselecting individual emails
 	const handleCheckboxChange = (id) => {
 		setSelectedEmailIds((prev) =>
 			prev.includes(id)
@@ -24,7 +49,6 @@ export default function EmailList({
 		);
 	};
 
-	// Select all or deselect all
 	const toggleSelectAll = () => {
 		if (selectedEmailIds.length === emails.length) {
 			setSelectedEmailIds([]);
@@ -33,176 +57,199 @@ export default function EmailList({
 		}
 	};
 
-	// Mark selected as read
 	const markSelectedAsRead = () => {
 		if (selectedEmailIds.length > 0) {
 			onMarkAsRead(selectedEmailIds);
-			setSelectedEmailIds([]); // Clear selection after marking as read
+			setSelectedEmailIds([]);
 		}
 	};
 
-	const getPriorityColor = (priority) => {
+	const getPriorityChipProps = (priority) => {
 		switch (priority) {
 			case 5:
-				return "bg-green-100 text-green-800 border-green-300"; // High
+				return { label: "High", color: "success", variant: "outlined" };
 			case 4:
-				return "bg-yellow-100 text-yellow-800 border-yellow-300"; // Medium
+				return { label: "Medium", color: "warning", variant: "outlined" };
 			case 3:
-				return "bg-blue-100 text-blue-800 border-blue-300"; // Normal
+				return { label: "Normal", color: "primary", variant: "outlined" };
 			default:
-				return "bg-gray-100 text-gray-700 border-gray-300"; // Low
+				return { label: "Low", color: "default", variant: "outlined" };
 		}
 	};
 
 	return (
-		<div className="h-full bg-white flex flex-col bg-white rounded-3xl p-2">
+		<Paper
+			elevation={3}
+			sx={{
+				display: "flex",
+				flexDirection: "column",
+				height: "100%",
+				borderRadius: 3,
+			}}
+		>
 			{/* Toolbar */}
-			<div className="flex justify-between items-center px-4 py-2 border-b border-gray-200 animate-gradient">
-				<div className="flex items-center gap-3">
-					{/* Select All Checkbox */}
-					<input
-						type="checkbox"
+			<Box
+				display="flex"
+				justifyContent="space-between"
+				alignItems="center"
+				px={2}
+				py={1.5}
+				borderBottom="1px solid"
+				borderColor="divider"
+			>
+				<Box display="flex" alignItems="center" gap={1}>
+					<Checkbox
 						checked={
 							selectedEmailIds.length === emails.length && emails.length > 0
 						}
 						onChange={toggleSelectAll}
-						className="cursor-pointer"
 					/>
-					<span className="text-sm text-gray-600">Select All</span>
-				</div>
+					<Typography variant="body2" color="text.secondary" component="div">
+						Select All
+					</Typography>
+				</Box>
 
-				{/* Mark as Read Button */}
 				{selectedEmailIds.length > 0 && (
-					<button
+					<Button
+						variant="contained"
+						color="primary"
+						startIcon={<CheckSquare size={16} />}
 						onClick={markSelectedAsRead}
-						className="flex items-center gap-2 cursor-pointer px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition"
+						size="small"
 					>
-						<CheckSquare size={16} />
 						Mark as Read
-					</button>
+					</Button>
 				)}
-			</div>
+			</Box>
 
 			{/* Email List */}
-			<div className="divide-y divide-gray-200 bg-white overflow-y-auto flex-1">
+			<List sx={{ overflowY: "auto", flex: 1 }}>
 				{emails.map((mail) => {
 					const isSelected = selectedEmail?.id === mail.id;
-					const isUnread = !mail.is_read;
+					const isUnread = !mail.read;
 					const isChecked = selectedEmailIds.includes(mail.id);
 
 					return (
-						<div
-							key={mail.id}
-							className={`flex items-start gap-3 p-4 cursor-pointer transition rounded-md mx-2 my-1.5 border hover:shadow-md glow
-                ${
-									isSelected
-										? "bg-blue-50 shadow-md border-blue-300"
-										: "border-transparent"
-								}
-                ${isUnread ? "bg-white" : "bg-blue-50 hover:bg-blue-70"}
-              `}
-						>
-							{/* Checkbox and Star */}
-							<div className="flex gap-3 flex-col items-center mt-4">
-								{/* Individual Checkbox */}
-								<input
-									type="checkbox"
-									checked={isChecked}
-									onChange={(e) => {
-										e.stopPropagation();
-										handleCheckboxChange(mail.id);
-									}}
-									className="cursor-pointer"
-								/>
-
-								{/* Favourite Star */}
-								<button
-									type="button"
-									aria-label={
-										mail.is_favourite
-											? "Remove from favourites"
-											: "Add to favourites"
-									}
-									onClick={(e) => {
-										e.stopPropagation();
-										onToggleFavourite(mail);
-									}}
-									className="text-gray-400 cursor-pointer hover:text-yellow-500 focus:outline-none"
+						<React.Fragment key={mail.id}>
+							<ListItem
+								disablePadding
+								sx={{
+									backgroundColor: isSelected
+										? "action.selected"
+										: "background.paper",
+									"&:hover": {
+										backgroundColor: "action.hover",
+									},
+									borderRadius: 2,
+									mx: 1,
+									my: 0.5,
+									transition: "0.2s",
+								}}
+							>
+								<ListItemButton
+									onClick={() => onSelectEmail(mail)}
+									sx={{ alignItems: "flex-start", py: 1.5 }}
 								>
-									<Star
-										size={18}
-										className={
-											mail.is_favourite
-												? "fill-yellow-500 text-yellow-500"
-												: "fill-white"
+									{/* Left Actions (Checkbox + Star) */}
+									<Box
+										display="flex"
+										flexDirection="column"
+										alignItems="center"
+										mr={2}
+									>
+										<Checkbox
+											checked={isChecked}
+											onChange={(e) => {
+												e.stopPropagation();
+												handleCheckboxChange(mail.id);
+											}}
+											size="small"
+										/>
+										<IconButton
+											size="small"
+											onClick={(e) => {
+												e.stopPropagation();
+												onToggleFavourite(mail);
+											}}
+											color={mail.is_favourite ? "warning" : "default"}
+										>
+											<Star
+												size={18}
+												fill={mail.is_favourite ? "#f59e0b" : "transparent"}
+											/>
+										</IconButton>
+									</Box>
+
+									{/* Email Content */}
+									<ListItemText
+										primary={
+											<Box
+												display="flex"
+												justifyContent="space-between"
+												alignItems="center"
+											>
+												<Typography
+													variant="subtitle2"
+													fontWeight={isUnread ? 600 : 400}
+													noWrap
+													component="div"
+												>
+													{mail.from_addr}
+												</Typography>
+												<Typography
+													variant="caption"
+													color="text.secondary"
+													component="div"
+												>
+													{dayjs(mail.created_at).format("MMM D")}
+												</Typography>
+											</Box>
+										}
+										secondary={
+											<>
+												{/* Subject and Priority */}
+												<Box
+													display="flex"
+													justifyContent="space-between"
+													alignItems="center"
+												>
+													<Typography
+														variant="body2"
+														fontWeight={isUnread ? 500 : 400}
+														noWrap
+														sx={{ maxWidth: "75%" }}
+														component="div"
+													>
+														{mail.subject}
+													</Typography>
+													{mail.priority && (
+														<Chip
+															size="small"
+															{...getPriorityChipProps(mail.priority)}
+														/>
+													)}
+												</Box>
+
+												{/* Email Preview */}
+												<Typography
+													variant="caption"
+													color="text.secondary"
+													noWrap
+													sx={{ display: "block", mt: 0.5 }}
+													component="div"
+												>
+													{mail.body}
+												</Typography>
+											</>
 										}
 									/>
-								</button>
-							</div>
-
-							{/* Email Details */}
-							<div
-								onClick={() => onSelectEmail(mail)}
-								role="button"
-								tabIndex={0}
-								onKeyDown={(e) => e.key === "Enter" && onSelectEmail(mail)}
-								className="flex-1 min-w-0"
-							>
-								{/* Sender & Date */}
-								<div className="flex justify-between items-center">
-									<h4
-										className={`truncate ${
-											isUnread
-												? "font-bold text-gray-900"
-												: "font-medium text-gray-700"
-										}`}
-									>
-										{mail.sender}
-									</h4>
-									<span className="text-xs text-gray-500">
-										{dayjs(mail.created_at).format("MMM D")}
-									</span>
-								</div>
-
-								{/* Subject & Priority */}
-								<div className="flex justify-between items-center mt-1">
-									<p
-										className={`truncate max-w-[75%] ${
-											isUnread ? "font-semibold text-gray-900" : "text-gray-700"
-										}`}
-									>
-										{mail.subject}
-									</p>
-									{mail.priority && (
-										<span
-											className={`ml-2 px-2 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(
-												mail.priority
-											)}`}
-										>
-											{mail.priority === 5
-												? "High"
-												: mail.priority === 4
-												? "Medium"
-												: mail.priority === 3
-												? "Normal"
-												: "Low"}
-										</span>
-									)}
-								</div>
-
-								{/* Email Preview */}
-								<p
-									className={`text-xs truncate mt-1 ${
-										isUnread ? "text-gray-700" : "text-gray-500"
-									}`}
-								>
-									{mail.body}
-								</p>
-							</div>
-						</div>
+								</ListItemButton>
+							</ListItem>
+							<Divider component="li" />
+						</React.Fragment>
 					);
 				})}
-			</div>
-		</div>
+			</List>
+		</Paper>
 	);
 }

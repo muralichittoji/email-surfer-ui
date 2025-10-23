@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { X, Paperclip, Smile } from "lucide-react";
 import RecipientsInput from "./Common/Recipients";
+import CustomTextField from "../Ui/CustomTextField";
 
 export default function ComposeMail({ onClose, onSend }) {
 	const [subject, setSubject] = useState("");
@@ -12,27 +13,22 @@ export default function ComposeMail({ onClose, onSend }) {
 
 	const handleFileChange = (e) => {
 		const files = Array.from(e.target.files);
-
 		const mappedFiles = files.map((file) => ({
 			filename: file.name,
 			url: URL.createObjectURL(file),
 			file,
 		}));
-
 		setAttachments((prev) => [...prev, ...mappedFiles]);
 	};
 
-	const splitEmails = (value) => {
-		return value
+	const splitEmails = (value) =>
+		value
 			.split(/[,\s]+/)
 			.map((email) => email.trim())
 			.filter((email) => email.length > 0);
-	};
 
 	const handleSend = () => {
-		if (!to || !subject || !body) {
-			return;
-		}
+		if (!to || !subject || !body) return;
 
 		const mailData = {
 			to: to.trim(),
@@ -48,18 +44,10 @@ export default function ComposeMail({ onClose, onSend }) {
 		};
 
 		onSend(mailData);
-
-		// // Clear form after sending
-		// setTo("");
-		// setCc("");
-		// setBcc("");
-		// setSubject("");
-		// setBody("");
-		// setAttachments([]);
 	};
 
 	return (
-		<div className="fixed bottom-8 right-8 w-1/2 h-3/4 bg-white rounded-xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden z-50">
+		<div className="fixed bottom-8 right-8 w-[600px] h-[600px] bg-white rounded-xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden z-50">
 			{/* Header */}
 			<div className="flex justify-between items-center px-4 py-2 border-b border-gray-200 bg-gray-50">
 				<h3 className="text-sm font-semibold text-gray-700">New Message</h3>
@@ -73,23 +61,33 @@ export default function ComposeMail({ onClose, onSend }) {
 			</div>
 
 			{/* Recipient Section */}
-			<RecipientsInput
-				to={to}
-				setTo={setTo}
-				cc={cc}
-				setCc={setCc}
-				bcc={bcc}
-				setBcc={setBcc}
-			/>
+			<div className="border-b border-gray-200 px-2">
+				<RecipientsInput
+					to={to}
+					setTo={setTo}
+					cc={cc}
+					setCc={setCc}
+					bcc={bcc}
+					setBcc={setBcc}
+				/>
+			</div>
 
 			{/* Subject */}
-			<input
-				type="text"
-				placeholder="Subject"
-				value={subject}
-				onChange={(e) => setSubject(e.target.value)}
-				className="w-full px-4 py-2 text-sm border-b border-gray-200 outline-none focus:bg-gray-50"
-			/>
+			<div className="border-b border-gray-200 px-2 py-1 my-1">
+				<CustomTextField
+					placeholder="Subject"
+					value={subject}
+					onChange={(e) => setSubject(e.target.value)}
+					fullWidth
+					sx={{
+						"& .MuiOutlinedInput-root": {
+							borderRadius: "10px",
+							height: 38,
+							fontSize: "0.9rem",
+						},
+					}}
+				/>
+			</div>
 
 			{/* Body */}
 			<textarea
@@ -121,13 +119,13 @@ export default function ComposeMail({ onClose, onSend }) {
 						/>
 					</label>
 
-					{/* Emoji Button (Optional) */}
+					{/* Emoji Button */}
 					<button className="p-2 rounded-lg hover:bg-gray-200 transition">
 						<Smile size={18} />
 					</button>
 				</div>
 
-				{/* Display Attached Files */}
+				{/* Attached Files */}
 				{attachments.length > 0 && (
 					<div className="text-xs text-gray-500">
 						{attachments.length} file(s) attached

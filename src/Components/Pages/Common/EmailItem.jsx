@@ -1,37 +1,88 @@
 import dayjs from "dayjs";
+import {
+	Box,
+	ListItem,
+	ListItemButton,
+	ListItemText,
+	Typography,
+	Badge,
+} from "@mui/material";
 
 const EmailItem = ({ email, onClick, isSelected }) => {
-	const isUnread = !email.read; // Adjust this line based on your actual property
+	const isUnread = !email.is_read; // updated field name (backend may differ)
 
 	return (
-		<div
-			onClick={onClick}
-			className={`p-4 border-b rounded-md cursor-pointer transition-shadow duration-200 
-				hover:shadow-md bg-white 
-				${isSelected ? "bg-blue-50" : ""}`}
+		<ListItem
+			disablePadding
+			sx={{
+				borderBottom: "1px solid #e5e7eb",
+				bgcolor: isSelected ? "action.hover" : "background.paper",
+				transition: "box-shadow 0.2s ease",
+				"&:hover": { boxShadow: 2 },
+				borderRadius: 1,
+				mt: 0.5,
+			}}
 		>
-			<div className="flex justify-between items-center mb-1">
-				<span className="font-medium text-gray-800">
-					{email.sender || email.account_name}
-				</span>
-				<span className="text-xs text-gray-500">
-					{dayjs(email.date || email.created_at).format("MMM D")}
-				</span>
-			</div>
-
-			<div
-				className={`text-sm truncate ${
-					isUnread ? "font-semibold text-black" : "text-gray-600"
-				}`}
+			<ListItemButton
+				onClick={onClick}
+				sx={{
+					borderRadius: 1,
+					alignItems: "flex-start",
+					py: 1.5,
+				}}
 			>
-				{email.subject || email.transaction_desc}
-			</div>
+				<Box sx={{ flex: 1 }}>
+					{/* Header: From + Date */}
+					<Box
+						sx={{
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "center",
+							mb: 0.5,
+						}}
+					>
+						<Typography
+							variant="body1"
+							fontWeight={isUnread ? 600 : 500}
+							color="text.primary"
+							noWrap
+						>
+							{email.from_addr || "Unknown Sender"}
+						</Typography>
 
-			{/* Optional: Unread indicator */}
-			{isUnread && (
-				<span className="inline-block mt-1 w-2 h-2 bg-blue-500 rounded-full" />
-			)}
-		</div>
+						<Typography variant="caption" color="text.secondary">
+							{dayjs(email.created_at).format("MMM D")}
+						</Typography>
+					</Box>
+
+					{/* Subject */}
+					<ListItemText
+						primaryTypographyProps={{
+							variant: "body2",
+							noWrap: true,
+							fontWeight: isUnread ? 600 : 400,
+							color: isUnread ? "text.primary" : "text.secondary",
+						}}
+						primary={email.subject || "No subject"}
+					/>
+
+					{/* Optional unread indicator */}
+					{isUnread && (
+						<Badge
+							variant="dot"
+							color="primary"
+							sx={{
+								mt: 0.5,
+								"& .MuiBadge-dot": {
+									width: 8,
+									height: 8,
+								},
+							}}
+						/>
+					)}
+				</Box>
+			</ListItemButton>
+		</ListItem>
 	);
 };
 

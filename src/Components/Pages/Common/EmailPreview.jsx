@@ -1,12 +1,22 @@
-import {
-	X,
-	Trash2,
-	Reply,
-	Forward,
-	BookmarkCheckIcon,
-	Bookmark,
-} from "lucide-react";
+import { useState } from "react";
+import { X, FileText } from "lucide-react";
 import dayjs from "dayjs";
+import {
+	Box,
+	Typography,
+	IconButton,
+	Divider,
+	Button,
+	Card,
+	CardHeader,
+	CardContent,
+	CardActions,
+	Dialog,
+	DialogTitle,
+	DialogContent,
+	CircularProgress,
+} from "@mui/material";
+import { fetchPdf } from "../api/apiService";
 
 export default function EmailPreview({
 	email,
@@ -14,93 +24,246 @@ export default function EmailPreview({
 	onDelete,
 	onReply,
 	onForward,
+	onToggleFavourite,
 }) {
-	if (!email) return null;
+	const [pdfUrl, setPdfUrl] = useState(null);
+	const [loadingPdf, setLoadingPdf] = useState(false);
+	const [pdfOpen, setPdfOpen] = useState(false);
+
+	const viewPDF = async () => {
+		try {
+			setLoadingPdf(true);
+			const blob = await fetchPdf(email.pdf_sha256);
+			const url = window.URL.createObjectURL(
+				new Blob([blob], { type: "application/pdf" })
+			);
+			setPdfUrl(url);
+			setPdfOpen(true);
+		} catch (error) {
+			console.error("Error opening PDF:", error);
+		} finally {
+			setLoadingPdf(false);
+		}
+	};
+
+	const handleClosePdf = () => {
+		setPdfOpen(false);
+		if (pdfUrl) {
+			window.URL.revokeObjectURL(pdfUrl);
+			setPdfUrl(null);
+		}
+	};
 
 	return (
-		<div className="h-full m- flex flex-col bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+		<Card
+			elevation={4}
+			sx={{
+				display: "flex",
+				flexDirection: "column",
+				height: "100%",
+				borderRadius: 3,
+				overflow: "hidden",
+			}}
+		>
 			{/* Header */}
-			<div className="flex justify-between items-center border-b px-6 py-4">
-				<div>
-					<h2 className="text-xl font-bold text-gray-800">{email.subject}</h2>
-					<p className="text-sm text-gray-500">
-						<span className="font-medium text-gray-700">From:</span>{" "}
-						{email.sender} •{" "}
-						<span className="font-medium text-gray-700">To:</span>{" "}
-						{email.receiver}
-					</p>
-				</div>
-
-				{/* Action Buttons - Close & Delete */}
-				<div className="flex items-center gap-2">
-					{/* Delete Button */}
-					<button
-						onClick={() => onDelete(email.id)}
-						className="p-2 hover:text-red-700 text-red-400 cursor-pointer rounded-full transition"
-						title="Delete Email"
-					>
-						<Trash2 size={20} />
-					</button>
-
-					{/* Bookmark Button */}
-					<button
-						onClick={() => onDelete(email.id)}
-						className="p-2 text-gray-500 hover:text-yellow-600 cursor-pointer rounded-full transition"
-						title="Delete Email"
-					>
-						<Bookmark size={20} className="hover:fill-yellow-500" />
-					</button>
-
-					{/* Close Button */}
-					<button
-						onClick={onClose}
-						className="p-2 hover:text-black text-gray-500 cursor-pointer rounded-full transition"
-						title="Close"
-					>
-						<X size={20} />
-					</button>
-				</div>
-			</div>
+			<CardHeader
+				title={
+					<Typography variant="h6" fontWeight={700}>
+						{email.subject}
+					</Typography>
+				}
+				subheader={
+					<Typography variant="body2" color="text.secondary">
+						<span style={{ fontWeight: 500 }}>From:</span> {email.from_addr} •{" "}
+						<span style={{ fontWeight: 500 }}>To:</span> {email.to_addr}
+					</Typography>
+				}
+				action={
+					<Box sx={{ display: "flex", gap: 1 }}>
+						<IconButton
+							onClick={() => onDelete(email.id)}
+							color="error"
+							size="small"
+							title="Delete Email"
+						>
+							<X size={18} />
+						</IconButton>
+						<IconButton
+							onClick={() => onToggleFavourite?.(email)}
+							color={email.is_favourite ? "warning" : "default"}
+							size="small"
+							title="Toggle Favourite"
+						>
+							<FileText size={18} />
+						</IconButton>
+						<IconButton
+							onClick={onClose}
+							color="default"
+							size="small"
+							title="Close"
+						>
+							<X size={18} />
+						</IconButton>
+					</Box>
+				}
+				sx={{ px: 3, py: 2, borderBottom: "1px solid", borderColor: "divider" }}
+			/>
 
 			{/* Meta Info */}
-			<div className="px-6 py-4 bg-gray-50 border-b">
-				<p className="text-sm text-gray-600">
-					<span className="font-medium">Date:</span>{" "}
+			<Box
+				sx={{
+					px: 3,
+					py: 1.5,
+					bgcolor: "grey.50",
+					borderBottom: "1px solid",
+					borderColor: "divider",
+				}}
+			>
+				<Typography variant="body2" color="text.secondary">
+					<strong>Date:</strong>{" "}
 					{dayjs(email.created_at).format("MMMM D, YYYY h:mm A")}
-				</p>
-				<p className="text-sm text-gray-600">
-					<span className="font-medium">Transaction ID:</span>{" "}
-					{email.txn_id || "N/A"}
-				</p>
-				<p className="text-sm text-gray-600">
-					<span className="font-medium">Account No:</span>{" "}
-					{email.account_no || "N/A"}
-				</p>
-			</div>
+				</Typography>
+				<Typography variant="body2" color="text.secondary">
+					<strong>Transaction ID:</strong> {email.txn_id || "N/A"}
+				</Typography>
+				<Typography variant="body2" color="text.secondary">
+					<strong>Account No:</strong> {email.account_no || "N/A"}
+				</Typography>
+			</Box>
 
 			{/* Email Body */}
-			<div className="flex-1 overflow-y-auto px-6 py-4 text-gray-800 whitespace-pre-wrap leading-relaxed">
-				{email.body}
-			</div>
+			<CardContent
+				sx={{
+					flex: 1,
+					overflowY: "auto",
+					px: 3,
+					py: 2,
+					color: "text.primary",
+					whiteSpace: "pre-wrap",
+					lineHeight: 1.7,
+				}}
+			>
+				{"Alert Here is an overview of Transaction: " + email.subject}
+			</CardContent>
+
+			{/* Gmail-style PDF Attachment Preview */}
+			{email.pdf_sha256 && (
+				<CardContent sx={{ px: 3, py: 2 }}>
+					<Box
+						onClick={viewPDF}
+						sx={{
+							display: "flex",
+							alignItems: "center",
+							gap: 2,
+							p: 2,
+							border: "1px solid #e0e0e0",
+							borderRadius: 2,
+							cursor: "pointer",
+							transition: "background 0.2s ease",
+							"&:hover": {
+								backgroundColor: "#f9f9f9",
+							},
+						}}
+					>
+						{/* PDF Thumbnail */}
+						<Box
+							sx={{
+								width: 60,
+								height: 80,
+								border: "1px solid #ddd",
+								borderRadius: 1,
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "center",
+								backgroundColor: "#fafafa",
+								flexShrink: 0,
+							}}
+						>
+							<FileText size={30} color="#d32f2f" />
+						</Box>
+
+						{/* PDF Info */}
+						<Box sx={{ flexGrow: 1 }}>
+							<Typography variant="body1" fontWeight={500}>
+								{email.subject || "Attachment.pdf"}
+							</Typography>
+							<Typography variant="body2" color="text.secondary">
+								PDF Document • Click to view
+							</Typography>
+						</Box>
+					</Box>
+				</CardContent>
+			)}
+
+			<Divider />
 
 			{/* Footer Actions */}
-			<div className="border-t px-6 py-4 flex justify-around gap-4 bg-gray-50">
-				<button
+			<CardActions
+				sx={{
+					display: "flex",
+					justifyContent: "space-around",
+					bgcolor: "grey.50",
+					px: 2,
+					py: 1.5,
+				}}
+			>
+				<Button
+					startIcon={<X />}
+					variant="contained"
+					color="primary"
 					onClick={() => onReply(email)}
-					className="w-85 flex items-center justify-center gap-2 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 cursor-pointer transition"
+					sx={{ textTransform: "none", borderRadius: 2 }}
 				>
-					<Reply size={18} />
 					Reply
-				</button>
-
-				<button
+				</Button>
+				<Button
+					startIcon={<FileText />}
+					variant="outlined"
+					color="primary"
 					onClick={() => onForward(email)}
-					className="w-85 flex items-center justify-center gap-2 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 cursor-pointer transition"
+					sx={{ textTransform: "none", borderRadius: 2 }}
 				>
-					<Forward size={18} />
 					Forward
-				</button>
-			</div>
-		</div>
+				</Button>
+			</CardActions>
+
+			{/* PDF Dialog */}
+			<Dialog open={pdfOpen} onClose={handleClosePdf} maxWidth="lg" fullWidth>
+				<DialogTitle>
+					PDF Preview
+					<IconButton
+						aria-label="close"
+						onClick={handleClosePdf}
+						sx={{ position: "absolute", right: 8, top: 8 }}
+					>
+						<X />
+					</IconButton>
+				</DialogTitle>
+				<DialogContent dividers>
+					{loadingPdf ? (
+						<Box
+							sx={{
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
+								height: "500px",
+							}}
+						>
+							<CircularProgress />
+						</Box>
+					) : (
+						pdfUrl && (
+							<iframe
+								src={pdfUrl}
+								width="100%"
+								height="600px"
+								title="PDF Viewer"
+								style={{ border: "none" }}
+							/>
+						)
+					)}
+				</DialogContent>
+			</Dialog>
+		</Card>
 	);
 }

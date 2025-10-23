@@ -5,6 +5,17 @@ import { MailWarning } from "lucide-react";
 import AuthContext from "../../../context/AuthContext";
 import AuthCard from "../Common/AuthCard";
 
+import {
+	Box,
+	Button,
+	TextField,
+	Typography,
+	InputAdornment,
+	IconButton,
+	Alert,
+} from "@mui/material";
+import CustomTextField from "../../Ui/CustomTextField";
+
 const Login = () => {
 	const [email, setEmail] = useState("");
 	const [error, setError] = useState("");
@@ -35,45 +46,64 @@ const Login = () => {
 			subtitle="Continue to Mail Surfer"
 			logo="/logo.png"
 		>
-			{/* Email input */}
-			<div className="flex flex-col justify-center items-center gap-16">
-				<input
-					type="text"
-					placeholder="Email or username"
+			<Box
+				display="flex"
+				flexDirection="column"
+				gap={3}
+				alignItems="center"
+				justifyContent="center"
+				width="100%"
+			>
+				<CustomTextField
+					label="Email or Username"
+					placeholder="Enter your email or username"
 					value={email}
 					onChange={(e) => setEmail(e.target.value)}
-					className={`w-full px-3 py-3 rounded-3xl border text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 ${
-						error ? "border-red-500 placeholder-red-500" : "border-gray-300"
-					}`}
+					error={error}
+					helperText="Please check your email or username"
 				/>
 
-				{/* Error message */}
+				{/* Error Alert */}
 				{error && (
-					<p className="text-red-600 text-sm flex items-center gap-2">
-						<MailWarning className="w-4 h-4" />
+					<Alert
+						severity="error"
+						icon={<MailWarning size={18} />}
+						sx={{ width: "100%" }}
+					>
 						{error}
-					</p>
+					</Alert>
 				)}
 
-				{/* Actions */}
-				{/* <button type="button" className="text-blue-600 hover:underline text-sm">
-					Create account
-					</button> */}
-				<div className="flex w-full items-end justify-between">
-					<p className="text-sm">
-						Dont remember username/email-id ?<br />
-						<a href="/" className="text-blue-400">
-							click here....
-						</a>{" "}
-					</p>
-					<button
+				{/* Actions Section */}
+				<Box
+					display="flex"
+					justifyContent="space-between"
+					alignItems="flex-end"
+					width="100%"
+					mt={2}
+				>
+					<Typography variant="body2" color="text.secondary">
+						Don't remember username/email? <br />
+						<Typography
+							component="a"
+							href="/"
+							color="primary"
+							sx={{ textDecoration: "none", cursor: "pointer" }}
+						>
+							Click here
+						</Typography>
+					</Typography>
+
+					<Button
+						variant="contained"
+						color="primary"
 						onClick={handleContinue}
-						className="bg-blue-600 text-white px-5 py-2 rounded font-medium hover:bg-blue-700 transition-colors w-30 cursor-pointer"
+						sx={{ px: 4, py: 1.2, textTransform: "none", borderRadius: 2 }}
 					>
 						Next
-					</button>
-				</div>
-			</div>
+					</Button>
+				</Box>
+			</Box>
 		</AuthCard>
 	);
 };

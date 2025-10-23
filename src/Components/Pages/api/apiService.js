@@ -24,6 +24,13 @@ export const fetchMails = async () => {
 	return response.data;
 };
 
+export const fetchPdf = async (pdfSha256) => {
+	const response = await axiosInstance.get(`/mails/pdf/${pdfSha256}`, {
+		responseType: "blob",
+	});
+	return response.data;
+};
+
 // Mark a single mail as read
 export const markAsRead = async (mailId) => {
 	return axiosInstance.patch(`/mails/${mailId}/read`, { read: true });

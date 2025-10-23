@@ -1,4 +1,6 @@
 import { useState } from "react";
+import CustomTextField from "../Ui/CustomTextField";
+import CustomButton from "../Ui/CustomButton";
 
 export default function FilterModal({ onClose, onApply }) {
 	const [formData, setFormData] = useState({
@@ -32,87 +34,64 @@ export default function FilterModal({ onClose, onApply }) {
 
 	return (
 		<div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-			<div className="bg-white w-[550px] rounded-lg shadow-lg p-6">
+			<div className="bg-white w-1/3 rounded-lg shadow-lg p-6">
 				<h2 className="text-lg font-semibold mb-4">Advanced Filters</h2>
 
-				<div className="space-y-4">
+				<div className="space-y-4 gap-4 flex flex-col text-sm">
 					{/* From */}
-					<div>
-						<label className="block text-sm font-medium text-gray-700">
-							From
-						</label>
-						<input
-							type="text"
-							name="from"
-							value={formData.from}
-							onChange={handleChange}
-							className="w-full border rounded px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-							placeholder="sender@example.com"
-						/>
-					</div>
+					<CustomTextField
+						height={40}
+						label="From"
+						name="from"
+						value={formData.from}
+						onChange={handleChange}
+						placeholder="sender@example.com"
+						sx={{ padding: 0 }}
+						inputSx={{ padding: 0 }}
+					/>
 
 					{/* To */}
-					<div>
-						<label className="block text-sm font-medium text-gray-700">
-							To
-						</label>
-						<input
-							type="text"
-							name="to"
-							value={formData.to}
-							onChange={handleChange}
-							className="w-full border rounded px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-							placeholder="receiver@example.com"
-						/>
-					</div>
+					<CustomTextField
+						height={40}
+						label="To"
+						name="to"
+						value={formData.to}
+						onChange={handleChange}
+						placeholder="receiver@example.com"
+					/>
 
 					{/* Subject */}
-					<div>
-						<label className="block text-sm font-medium text-gray-700">
-							Subject
-						</label>
-						<input
-							type="text"
-							name="subject"
-							value={formData.subject}
-							onChange={handleChange}
-							className="w-full border rounded px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-							placeholder="Email subject"
-						/>
-					</div>
+					<CustomTextField
+						height={40}
+						label="Subject"
+						name="subject"
+						value={formData.subject}
+						onChange={handleChange}
+						placeholder="Email subject"
+					/>
 
 					{/* Has the words */}
-					<div>
-						<label className="block text-sm font-medium text-gray-700">
-							Has the words
-						</label>
-						<input
-							type="text"
-							name="hasWords"
-							value={formData.hasWords}
-							onChange={handleChange}
-							className="w-full border rounded px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-							placeholder="Keywords separated by spaces"
-						/>
-					</div>
+					<CustomTextField
+						height={40}
+						label="Has the words"
+						name="hasWords"
+						value={formData.hasWords}
+						onChange={handleChange}
+						placeholder="Keywords separated by spaces"
+					/>
 
 					{/* Doesn't have */}
-					<div>
-						<label className="block text-sm font-medium text-gray-700">
-							Doesn't have
-						</label>
-						<input
-							type="text"
-							name="doesntHave"
-							value={formData.doesntHave}
-							onChange={handleChange}
-							className="w-full border rounded px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-							placeholder="Exclude keywords"
-						/>
-					</div>
+					<CustomTextField
+						height={40}
+						label="Doesn't have"
+						name="doesntHave"
+						value={formData.doesntHave}
+						onChange={handleChange}
+						placeholder="Exclude keywords"
+					/>
 
 					{/* Size Filter */}
-					<div className="flex items-center gap-2">
+					<div className="flex items-center justify-start gap-2">
 						<label className="block text-sm font-medium text-gray-700 w-16">
 							Size
 						</label>
@@ -125,13 +104,15 @@ export default function FilterModal({ onClose, onApply }) {
 							<option value="greater than">greater than</option>
 							<option value="less than">less than</option>
 						</select>
-						<input
+						<CustomTextField
+							height={40}
 							type="number"
 							name="sizeValue"
 							value={formData.sizeValue}
 							onChange={handleChange}
-							className="border rounded px-3 py-1 text-sm w-20 focus:ring-blue-500 focus:border-blue-500"
 							placeholder="Size"
+							sx={{ width: 100, padding: 0 }} // styles on the TextField root
+							inputSx={{ padding: 0 }}
 						/>
 						<span className="text-sm text-gray-600">MB</span>
 					</div>
@@ -151,12 +132,12 @@ export default function FilterModal({ onClose, onApply }) {
 							<option value="1 week">1 week</option>
 							<option value="1 month">1 month</option>
 						</select>
-						<input
+						<CustomTextField
+							height={40}
 							type="date"
 							name="date"
 							value={formData.date}
 							onChange={handleChange}
-							className="border rounded px-2 py-1 text-sm focus:ring-blue-500 focus:border-blue-500"
 						/>
 					</div>
 
@@ -227,22 +208,16 @@ export default function FilterModal({ onClose, onApply }) {
 
 				{/* Footer */}
 				<div className="mt-6 flex justify-between">
-					<button
-						onClick={onClose}
-						className="px-4 py-2 border rounded hover:bg-gray-100"
-					>
+					<CustomButton onClick={onClose} variant="outlined" color="inherit">
 						Close
-					</button>
-					<div className="space-x-2">
-						<button className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
-							Create Filter
-						</button>
-						<button
-							onClick={handleApply}
-							className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-						>
+					</CustomButton>
+
+					<div className="gap-3 flex">
+						<CustomButton color="secondary">Create Filter</CustomButton>
+
+						<CustomButton onClick={handleApply} color="primary">
 							Search
-						</button>
+						</CustomButton>
 					</div>
 				</div>
 			</div>

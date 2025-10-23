@@ -1,11 +1,23 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
-	ChevronDown,
-	Filter,
-	LogOut,
+	AppBar,
+	Toolbar,
+	TextField,
+	IconButton,
+	InputAdornment,
 	Menu,
-	Settings,
+	MenuItem,
+	Typography,
+	Box,
+	Paper,
+} from "@mui/material";
+import {
+	Menu as MenuIcon,
+	Filter,
+	ChevronDown,
 	UserRound,
+	Settings,
+	LogOut,
 } from "lucide-react";
 import useAuth from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -17,8 +29,11 @@ export default function GlobalHeader({
 	isSidebar,
 }) {
 	const { user, logout } = useAuth();
-	const [dropdownOpen, setDropdownOpen] = useState(false);
+	const [anchorEl, setAnchorEl] = useState(null);
 	const navigate = useNavigate();
+
+	const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
+	const handleMenuClose = () => setAnchorEl(null);
 
 	const handleLogout = () => {
 		logout();
@@ -26,58 +41,115 @@ export default function GlobalHeader({
 	};
 
 	return (
-		<header className="flex items-center justify-between p-4 bg-blue-50">
-			{/* Search Bar */}
-			<div className="flex w-full gap-2">
-				<button
-					className="lg:display-none cursor-pointer"
-					onClick={() => isSidebar()}
+		<AppBar
+			position="static"
+			color="default"
+			elevation={0}
+			sx={{
+				backgroundColor: "#f0f6ff",
+				borderBottom: "1px solid #e0e0e0",
+				px: 2,
+			}}
+		>
+			<Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+				{/* Left Section: Menu + Search */}
+				<Box
+					sx={{ display: "flex", alignItems: "center", gap: 2, width: "100%" }}
 				>
-					<Menu />
-				</button>
-				<div className="flex-1 max-w-3/7 relative">
-					<input
-						type="text"
-						placeholder="Search mails..."
-						value={searchQuery}
-						onChange={(e) => setSearchQuery(e.target.value)}
-						className="w-full border rounded-3xl px-4 py-2 pr-10 focus:outline-none focus:ring focus:ring-blue-300"
-					/>
-					<button
-						onClick={onFilterOpen}
-						className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
-					>
-						<Filter size={20} />
-					</button>
-				</div>
-			</div>
-			{/* User Dropdown */}
-			<div className="relative ml-4">
-				<button
-					onClick={() => setDropdownOpen(!dropdownOpen)}
-					className="flex items-center gap-2 text-gray-700 mr-5 hover:text-gray-900 cursor-pointer"
-				>
-					<span>{user?.user?.username || "User"}</span>
-					<ChevronDown size={18} />
-				</button>
+					<IconButton color="inherit" onClick={isSidebar}>
+						<MenuIcon />
+					</IconButton>
 
-				{dropdownOpen && (
-					<div className="absolute right-0 mt-2 w-40 bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden animate-gradient">
-						<button className="cursor-pointer w-full px-3 py-2 text-left hover:bg-blue-50 border-b border-gray-200 flex items-center gap-3">
-							<UserRound size={20} /> Profile
-						</button>
-						<button className="cursor-pointer w-full px-3 py-2 text-left hover:bg-blue-50 border-b border-gray-200 flex items-center gap-3">
-							<Settings size={20} /> Settings
-						</button>
-						<button
-							className="cursor-pointer w-full px-3 py-2 text-left text-red-600 hover:bg-red-50 flex items-center gap-3"
+					{/* Search Bar */}
+					<Paper
+						component="form"
+						sx={{
+							display: "flex",
+							alignItems: "center",
+							flex: 1,
+							maxWidth: 500,
+							borderRadius: 50,
+							pl: 2,
+							pr: 1,
+							backgroundColor: "#fff",
+						}}
+					>
+						<TextField
+							fullWidth
+							variant="standard"
+							placeholder="Search mails..."
+							value={searchQuery}
+							onChange={(e) => setSearchQuery(e.target.value)}
+							InputProps={{
+								disableUnderline: true,
+								endAdornment: (
+									<InputAdornment position="end">
+										<IconButton onClick={onFilterOpen}>
+											<Filter size={20} />
+										</IconButton>
+									</InputAdornment>
+								),
+							}}
+							sx={{
+								"& input": { padding: "8px 0", borderRadius: 50 },
+							}}
+						/>
+					</Paper>
+				</Box>
+
+				{/* Right Section: User Dropdown */}
+				<Box sx={{ ml: 3 }}>
+					<IconButton
+						onClick={handleMenuOpen}
+						sx={{
+							display: "flex",
+							alignItems: "center",
+							gap: 1,
+							borderRadius: 50,
+							px: 2,
+							py: 1,
+							backgroundColor: "#fff",
+							border: "1px solid #e0e0e0",
+							"&:hover": { backgroundColor: "#f3f3f3" },
+						}}
+					>
+						<Typography variant="body2" sx={{ color: "text.primary" }}>
+							{user?.user?.username || "User"}
+						</Typography>
+						<ChevronDown size={18} />
+					</IconButton>
+
+					<Menu
+						anchorEl={anchorEl}
+						open={Boolean(anchorEl)}
+						onClose={handleMenuClose}
+						PaperProps={{
+							sx: {
+								borderRadius: 3,
+								mt: 1.5,
+								minWidth: 160,
+								boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+							},
+						}}
+					>
+						<MenuItem onClick={handleMenuClose}>
+							<UserRound size={18} style={{ marginRight: 8 }} /> Profile
+						</MenuItem>
+						<MenuItem onClick={handleMenuClose}>
+							<Settings size={18} style={{ marginRight: 8 }} /> Settings
+						</MenuItem>
+						<MenuItem
 							onClick={handleLogout}
+							sx={{
+								color: "error.main",
+								"&:hover": { backgroundColor: "#ffebee" },
+							}}
 						>
-							<LogOut size={20} /> Logout
-						</button>
-					</div>
-				)}
-			</div>
-		</header>
+							<LogOut size={18} style={{ marginRight: 8 }} /> Logout
+						</MenuItem>
+					</Menu>
+				</Box>
+			</Toolbar>
+		</AppBar>
 	);
 }

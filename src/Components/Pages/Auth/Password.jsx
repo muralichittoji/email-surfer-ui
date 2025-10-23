@@ -4,6 +4,7 @@ import { loginApi } from "../api/apiService";
 import { useNavigate } from "react-router-dom";
 import { MailWarning } from "lucide-react";
 import AuthCard from "../Common/AuthCard";
+import CustomTextField from "../../Ui/CustomTextField";
 
 const Password = () => {
 	const [password, setPassword] = useState("");
@@ -59,7 +60,7 @@ const Password = () => {
 			logo="/logo.png"
 		>
 			{/* Password field */}
-			<input
+			<CustomTextField
 				type="password"
 				placeholder="Enter your password"
 				value={password}
